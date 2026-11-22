@@ -1,0 +1,22 @@
+# mtkclient fix: Disable "Reconnect to stage2 with higher speed"
+#
+# On Windows 11 with UsbDk, the baud-rate change and port reopen after
+# DA stage-2 upload consistently fails (exit code 5). The actual flash
+# works fine at the default (full) USB speed, so we hard-disable the
+# reconnect block.
+#
+# File: mtkclient/Library/DA/legacy/dalegacy_lib.py, line 654
+#
+# Apply:
+#   Change:
+#     if speed[0] == 0 and self.daconfig.reconnect:
+#   To:
+#     if False and speed[0] == 0 and self.daconfig.reconnect:  # FORCED OFF
+#
+# After this patch, a BROM-mode flash runs to completion:
+#   Preloader -> Kamakiri -> DA stage-1 -> DA stage-2 (upload)
+#   -> [SKIP reconnect] -> Write partition -> exit 0
+#
+# Confirmed working on:
+#   Device: Alcatel 8082 (TCL U3A_10_WIFI, MT6580), Android 8.1
+#   Host:   Windows 11 Pro build 26200, mtkclient 2.1.4, UsbDk
