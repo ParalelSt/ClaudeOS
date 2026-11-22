@@ -1,0 +1,25 @@
+# LK Secure Boot Check Bypass Patch
+# Target: Alcatel 8082 (TCL U3A_10_WIFI) LK image
+# SoC: MediaTek MT6580
+#
+# LK is loaded at 0x81E00000
+# Patch location: file offset 0x2AF90 (virtual address 0x81E2AF90)
+# Function: FUN_81e2af90 — the SBC (Secure Boot Check) gate
+#
+# Original bytes: 16 4b 10 b5  (PUSH {R4,LR}; LDR R3, [PC, #0x58])
+# Patched bytes:  00 20 70 47  (MOVS R0, #0; BX LR — return 0 immediately)
+#
+# Effect: Makes the SBC verification function always return 0 (success),
+#         allowing unsigned/modified boot images to load.
+#
+# Apply with:
+#   python -c "
+#   d = open('lk_stock.bin','rb').read()
+#   d = bytearray(d)
+#   assert d[0x2AF90:0x2AF94] == b'\x16\x4b\x10\xb5', 'Stock bytes mismatch'
+#   d[0x2AF90:0x2AF94] = b'\x00\x20\x70\x47'
+#   open('lk_patched.bin','wb').write(d)
+#   "
+
+# Binary patch (offset, old, new):
+0x0002AF90: 164b10b5 -> 00207047

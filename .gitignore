@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+*.log
+flash_result.log

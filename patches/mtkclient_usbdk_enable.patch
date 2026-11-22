@@ -1,0 +1,15 @@
+--- a/mtkclient/Library/Connection/usblib.py
++++ b/mtkclient/Library/Connection/usblib.py
+@@ -145,8 +145,8 @@
+                 self.backend = backend
+                 if self.backend is not None:
+                     try:
+-                        # NOTE: disabled USE_USBDK option - UsbDk enumeration is broken on
+-                        # this Windows build (26200); plain WinUSB/libusb0 enumeration works.
+-                        # self.backend.lib.libusb_set_option(self.backend.ctx, 1)
+-                        pass
++                        # Re-enabled USE_USBDK: UsbDk works from non-admin for BROM access
++                        # on Windows 11 build 26200 with UsbDk filter driver installed.
++                        # This allows mtkclient to access BROM without admin privileges.
++                        self.backend.lib.libusb_set_option(self.backend.ctx, 1)
+                     except Exception as e:
